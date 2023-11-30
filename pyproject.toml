@@ -1,0 +1,12 @@
+[project]
+name = ""
+version = ""
+description = ""
+authors = [
+    {name = "Micah Ferrill", email = "mcferrill@gmail.com"},
+]
+dependencies = []
+requires-python = ">=3.10"
+readme = "README.md"
+license = {text = "MIT"}
+
