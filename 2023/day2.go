@@ -7,38 +7,45 @@ import (
 	"strings"
 )
 
-// Takes a line from the input file and returns the game id if valid or 0 if not.
-func validGame(line string) int {
+// Takes a line from the input file and returns the game id and power of
+// "Minimum Viable Cubes" if valid or 0 if not.
+func validGame(line string) (int, int) {
   parts := strings.Split(line, ": ")
   id, _ := strconv.Atoi(strings.Split(parts[0], " ")[1])
 
   peeks := strings.Split(parts[1], "; ")
-  for _, bag := range peeks {
+  // minimum viable cubes
+  MVC := map[string]int{"red": 0, "green": 0, "blue": 0};
+  for _, peek := range peeks {
     cubes := map[string]int{"red": 0, "green": 0, "blue": 0};
-    for _, color := range strings.Split(bag, ", ") {
+    for _, color := range strings.Split(peek, ", ") {
       parts := strings.Split(color, " ")
       count, _ := strconv.Atoi(parts[0])
       cubes[parts[1]] = count
+      MVC[parts[1]] = max(count, MVC[parts[1]])
     }
     if (cubes["red"] > 12 || cubes["green"] > 13 || cubes["blue"] > 14) {
-      return 0
+      id = 0
     }
+
   }
 
-  return id
+  return id, (MVC["red"] * MVC["green"] * MVC["blue"])
 }
 
 func main() {
   data, _ := os.ReadFile("day2.txt")
   lines := strings.Split(string(data), "\n")
-  var validSum int
+  var validSum, MVCSum int
   for _, line := range lines {
     if (len(line) < 1) {
       continue
     }
-    validSum += validGame(line)
-
+    sum, mvc := validGame(line)
+    validSum += sum
+    MVCSum += mvc
   }
 
   fmt.Println(validSum)
+  fmt.Println(MVCSum)
 }
