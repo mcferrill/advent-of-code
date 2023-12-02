@@ -7,10 +7,25 @@ import (
 	"strings"
 )
 
-var constraint = map[string]int{
-  "red": 12,
-  "green": 13,
-  "blue": 14,
+// Takes a line from the input file and returns the game id if valid or 0 if not.
+func validGame(line string) int {
+  parts := strings.Split(line, ": ")
+  id, _ := strconv.Atoi(strings.Split(parts[0], " ")[1])
+
+  peeks := strings.Split(parts[1], "; ")
+  for _, bag := range peeks {
+    cubes := map[string]int{"red": 0, "green": 0, "blue": 0};
+    for _, color := range strings.Split(bag, ", ") {
+      parts := strings.Split(color, " ")
+      count, _ := strconv.Atoi(parts[0])
+      cubes[parts[1]] = count
+    }
+    if (cubes["red"] > 12 || cubes["green"] > 13 || cubes["blue"] > 14) {
+      return 0
+    }
+  }
+
+  return id
 }
 
 func main() {
@@ -21,34 +36,8 @@ func main() {
     if (len(line) < 1) {
       continue
     }
-    parts := strings.Split(line, ": ")
-    gameID := strings.Split(parts[0], " ")[1]
-    bags := strings.Split(parts[1], "; ")
-    var bagList []map[string]int
-    sums := map[string]int{
-      "red": 0,
-      "green": 0,
-      "blue": 0,
-    };
-    for _, bag := range bags {
-      bagColors := map[string]int{
-        "red": 0,
-        "green": 0,
-        "blue": 0,
-      };
-      for _, color := range strings.Split(bag, ", ") {
-        parts := strings.Split(color, " ")
-        count, _ := strconv.Atoi(parts[0])
-        bagColors[parts[1]] = count
-        sums[parts[1]] += count
-      }
-      bagList = append(bagList, bagColors)
-    }
+    validSum += validGame(line)
 
-    if (sums["red"] <= constraint["red"] && sums["green"] <= constraint["green"] && sums["blue"] <= constraint["blue"]) {
-      id, _ := strconv.Atoi(gameID)
-      validSum += id
-    }
   }
 
   fmt.Println(validSum)
