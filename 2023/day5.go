@@ -19,7 +19,7 @@ func find(start int, end int, sourceMap [][]int) int {
       continue
     }
 
-    offset := sStart - max(start, sStart)
+    offset := max(start, sStart) - sStart
     return dStart + offset
 
   }
