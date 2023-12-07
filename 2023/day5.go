@@ -9,7 +9,6 @@ import (
 )
 
 func find(source int, sourceMap []string) int {
-  var matches []int
   for _, line := range sourceMap {
     if (line == "") {
       continue
@@ -23,14 +22,8 @@ func find(source int, sourceMap []string) int {
       continue
     }
 
-    for i := 0; i <= 0 + rangeLength; i++ {
-      if (sourceStart + i == source) {
-        matches = append(matches, destinationStart + i)
-      }
-    }
-  }
-  if (len(matches) > 0) {
-    return slices.Min(matches)
+    offset := source - sourceStart
+    return destinationStart + offset
   }
   return source
 }
@@ -41,13 +34,22 @@ func main() {
   seeds := strings.Split(sections[0], " ")[1:]
 
   var results []int
-  for _, seed := range seeds {
-    number, _ := strconv.Atoi(seed)
-    for _, section := range sections {
-      lines := strings.Split(section, "\n")[1:]
-      number = find(number, lines)
+  for i := 0; i <= len(seeds); i += 2 {
+    start, _ := strconv.Atoi(seeds[i])
+    length, _ := strconv.Atoi(seeds[i+1])
+
+    for i := start; i <= start + length; i++ {
+      number := i
+      for _, section := range sections {
+        lines := strings.Split(section, "\n")[1:]
+        number = find(number, lines)
+      }
+      results = append(results, number)
     }
-    results = append(results, number)
+
+    fmt.Println(results)
+    return
+
   }
 
   fmt.Println(slices.Min(results))
