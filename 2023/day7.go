@@ -13,7 +13,6 @@ var cardValues = map[rune]int{
   'A': 14,
   'K': 13,
   'Q': 12,
-  'J': 11,
   'T': 10,
   '9': 9,
   '8': 8,
@@ -23,14 +22,20 @@ var cardValues = map[rune]int{
   '4': 4,
   '3': 3,
   '2': 2,
+  'J': 1,
 }
 
 // Returns value of hand from 1-7. Higher number is better
 func typeOfHand(hand string) int {
   cards := make(map[rune]int)
   var counts []int
+  jokers := 0
   for _, card := range hand {
-    cards[card] += 1
+    if card == 'J' {
+      jokers++
+    } else {
+      cards[card] += 1
+    }
   }
   for _, v := range cards {
     counts = append(counts, v)
@@ -38,6 +43,11 @@ func typeOfHand(hand string) int {
   slices.SortFunc(counts, func(a, b int) int {
     return cmp.Compare(b, a)
   })
+
+  if (jokers == 5) {
+    counts = append(counts, 0)
+  }
+  counts[0] += jokers
 
   if counts[0] == 5 {
     return 7
