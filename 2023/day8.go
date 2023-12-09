@@ -35,19 +35,14 @@ func main() {
     nodeList = append(nodeList, []string{name, left, right})
   }
 
-  stepCount := 0
   currentNode := 0
   step := 0
-  for currentNode != len(nodeList) - 1 {
-    next := nodeList[currentNode][directions[step]+1]
+  for nodeList[currentNode][0] != "ZZZ" {
+    currentStep := step % len(directions)
+    next := nodeList[currentNode][directions[currentStep]+1]
     currentNode = nodeMap[string(next)]
-
-    stepCount++
     step++
-    if step >= len(directions) {
-      step = 0
-    }
   }
 
-  fmt.Println(stepCount)
+  fmt.Println(step)
 }
