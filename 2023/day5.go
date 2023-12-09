@@ -7,8 +7,10 @@ import (
 	"slices"
 	"strconv"
 	"strings"
-	// "sync"
 )
+
+var maps [][][]int
+var seeds [][]int
 
 // Traverse a single number through a single map.
 func find(source int, sourceMap [][]int) int {
@@ -18,7 +20,7 @@ func find(source int, sourceMap [][]int) int {
     sStart := sourceRange[2]
     sEnd := sourceRange[3]
 
-    if (source > sEnd || source < sStart) {
+    if source < sStart || source >= sEnd {
       continue
     }
 
@@ -35,38 +37,6 @@ func seedToLocation(seed int) int {
   }
   return number
 }
-
-// Find (start, end) intersection with (destination start, destination end)
-// and return array of corresponding (source start, source end)
-func findFromRange(start, end int, sourceMap [][]int) [][]int {
-  var result [][]int
-  for _, sourceRange := range sourceMap {
-    if (start > sourceRange[1] || end < sourceRange[0]) {
-      continue
-    }
-
-    startOffset := max(start, sourceRange[0]) - sourceRange[0]
-    endOffset := sourceRange[1] - min(end, sourceRange[1])
-
-    start = sourceRange[2] + startOffset
-    end = sourceRange[3] + endOffset
-
-    result = append(result, []int{start, end})
-  }
-  return result
-}
-
-func validSeed(number int) bool {
-  for _, seedRange := range seeds {
-    if (number >= seedRange[0] && number <= seedRange[1]) {
-      return true
-    }
-  }
-  return false
-}
-
-var maps [][][]int
-var seeds [][]int
 
 func main() {
   data, _ := os.ReadFile("day5.txt")
@@ -86,6 +56,9 @@ func main() {
       row := []int{destinationStart, destinationStart + rangeLength, sourceStart, sourceStart + rangeLength}
       sectionMap = append(sectionMap, row)
     }
+    slices.SortFunc(sectionMap, func(a, b []int) int {
+      return cmp.Compare(a[2], b[2])
+    })
     maps = append(maps, sectionMap)
   }
 
@@ -97,8 +70,8 @@ func main() {
     seeds = append(seeds, []int{start, start + length})
   }
 
-  // recreating part 1
-  // var results []int
+  // recreating part 1 = 226172555
+  // lowest : = -1
   // for _, number := range strings.Split(sections[0], " ")[1:] {
   //   seed, _ := strconv.Atoi(number)
   //   results = append(results, seedToLocation(seed))
@@ -106,61 +79,18 @@ func main() {
   // fmt.Println(slices.Min(results))
   // return
 
-  // brute force
+  // brute force part 2
   lowest := -1
+  lowestSeed := -1
   for _, seedRange := range seeds {
     for i := seedRange[0]; i <= seedRange[1]; i++ {
       number := seedToLocation(i)
       if lowest < 0 || number < lowest {
         lowest = number
+        lowestSeed = i
       }
     }
   }
-  fmt.Println(lowest)
-  return
-
-  // Sort locations by lowest first
-  locations := maps[len(maps)-1]
-  slices.SortFunc(locations, func(a, b []int) int {
-    return cmp.Compare(a[0], b[0])
-  })
-
-  // var results []int
-  lowest = -1
-  for _, locationRange := range locations {
-    start := locationRange[0]
-    end := locationRange[1]
-
-    var nextRanges [][]int = [][]int{{start, end}}
-
-    for i := len(maps)-2; i > -1; i-- {
-      ranges := nextRanges[:]
-      nextRanges = [][]int{{}}
-
-      for _, r := range ranges {
-        if len(r) == 0 {
-          continue
-        }
-        result := findFromRange(r[0], r[1], maps[i])
-        nextRanges = append(nextRanges, result...)
-      }
-    }
-
-    for _, r := range nextRanges {
-      if len(r) == 0 {
-        continue
-      }
-      for i := r[0]; i < r[1]; i++ {
-        if validSeed(i) {
-          result := seedToLocation(i)
-          if lowest > -1 && result < lowest {
-            lowest = result
-          }
-        }
-      }
-    }
-  }
-
-  fmt.Println(lowest)
+  fmt.Println(lowest, lowestSeed)
 }
 
