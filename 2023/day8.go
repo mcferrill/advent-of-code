@@ -18,9 +18,8 @@ func main() {
     }
   }
 
-  var nodeList [][]string
-  nodeMap := make(map[string]int)
-  for i, line := range lines[2:] {
+  nodeMap := make(map[string][]string)
+  for _, line := range lines[2:] {
     if line == "" {
       continue
     }
@@ -31,16 +30,14 @@ func main() {
     left := sides[0][1:]
     right := sides[1][:3]
 
-    nodeMap[name] = i
-    nodeList = append(nodeList, []string{name, left, right})
+    nodeMap[name] = []string{left, right}
   }
 
-  currentNode := 0
+  currentNode := "AAA"
   step := 0
-  for nodeList[currentNode][0] != "ZZZ" {
-    currentStep := step % len(directions)
-    next := nodeList[currentNode][directions[currentStep]+1]
-    currentNode = nodeMap[string(next)]
+  for currentNode != "ZZZ" {
+    leftOrRight := directions[step % len(directions)]
+    currentNode = nodeMap[currentNode][leftOrRight]
     step++
   }
 
