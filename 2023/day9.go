@@ -16,7 +16,7 @@ func nextForRow(row []int) int {
     }
     if i > 0 {
       last := row[i-1]
-      diffs = append(diffs, max(number, last) - min(number, last))
+      diffs = append(diffs, number - last)
     }
   }
   if len(row) == 1 {
