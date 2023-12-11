@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func nextForRow(row []int) int {
+func nextForRow(row []int, reverse bool) int {
   var diffs []int
   nonZero := false
   for i, number := range row {
@@ -19,12 +19,20 @@ func nextForRow(row []int) int {
       diffs = append(diffs, number - last)
     }
   }
+  end := len(row) - 1
+  if reverse {
+    end = 0
+  }
   if len(row) == 1 {
     return 0
   } else if nonZero {
-    return row[len(row)-1] + nextForRow(diffs)
+    offset := nextForRow(diffs, reverse)
+    if reverse {
+      offset = -offset
+    }
+    return row[end] + offset
   } else {
-    return row[len(row)-1]
+    return row[end]
   }
 }
 
@@ -43,7 +51,7 @@ func main() {
       numbers = append(numbers, number)
     }
 
-    sum += nextForRow(numbers)
+    sum += nextForRow(numbers, true)
   }
 
   fmt.Println(sum)
