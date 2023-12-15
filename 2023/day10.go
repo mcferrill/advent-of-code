@@ -27,6 +27,10 @@ var directions map[string][]int = map[string][]int{
 func offsets(from Point) [][]int {
   var results [][]int
   for match, offset := range directions {
+    other := []int{from.x + offset[0], from.y + offset[1]}
+    if other[0] < 0 || other[0] > len(grid) || other[1] < 0 || other[1] > len(grid[0]) {
+      continue
+    }
     if from.raw == "S" || strings.Contains(match, from.raw) {
       results = append(results, offset)
     }
@@ -47,33 +51,50 @@ func findNext(start Point) []Point {
   return result
 }
 
+func area(perimeter []Point) int {
+  value := 0.0
+
+  last := perimeter[len(perimeter) - 1]
+
+  for _, point := range perimeter {
+    value += float64(last.x + point.x) * float64(last.y - point.y)
+    last = point
+  }
+
+  return int(value / 2)
+}
+
 func main() {
   data, _ := os.ReadFile("day10.txt")
   lines := strings.Split(string(data), "\n")
 
   var start Point
+  var ground []Point
 
   grid = make([][]Point, len(lines[0]))
   for y, line := range lines {
     for x, char := range line {
       if len(grid[x]) == 0 {
-        grid[x] = make([]Point, len(lines[0]))
+        grid[x] = make([]Point, len(lines))
       }
       p := Point{x, y, string(char)}
       if char == 'S' {
         start = p 
+      } else if char == '.' {
+        ground = append(ground, p)
       }
       grid[x][y] = p
     }
   }
 
-  steps := 0
+  var steps []Point
   pos := start
   last := start
-  for steps == 0 || pos.raw != "S" {
-    if steps > 0 && reflect.DeepEqual(pos, last) {
+  for len(steps) == 0 || pos.raw != "S" {
+    if len(steps) > 0 && reflect.DeepEqual(pos, last) {
       break
     }
+    steps = append(steps, pos)
     for _, neighbor := range findNext(pos) {
       if !reflect.DeepEqual(neighbor, last) {
         last = pos
@@ -81,8 +102,9 @@ func main() {
         break
       }
     }
-    steps++
   }
+  fmt.Println(len(steps) / 2)
 
-  fmt.Println(steps / 2)
+  loopArea := area(steps)
+  fmt.Println(loopArea - len(steps) / 2 + 1)
 }
