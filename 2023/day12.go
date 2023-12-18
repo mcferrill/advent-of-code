@@ -7,7 +7,15 @@ import (
 	"strings"
 )
 
+var cache map[string]int = make(map[string]int)
+
 func count(line string, groups []int) int {
+  cacheKey := line + strings.Trim(strings.Join(strings.Fields(fmt.Sprint(groups)), ","), "[]")
+  cacheValue, ok := cache[cacheKey]
+  if ok {
+    return cacheValue
+  }
+
   result := 0
 
   // If we've satisfied all groups and there are no leftover springs.
@@ -37,6 +45,7 @@ func count(line string, groups []int) int {
     }
   }
 
+  cache[cacheKey] = result
   return result
 }
 
@@ -56,7 +65,13 @@ func main() {
       value, _ := strconv.Atoi(length)
       groups = append(groups, value)
     }
-    sum += count(raw, groups)
+    line = raw
+    expandedGroups := groups[:]
+    for i := 0; i < 4; i++ {
+      line += "?" + raw
+      expandedGroups = append(expandedGroups, groups...)
+    }
+    sum += count(line, expandedGroups)
   }
 
   fmt.Println(sum)
