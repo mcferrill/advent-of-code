@@ -115,7 +115,25 @@ func traverse(from Point, offset Point) {
 func main(){
   data, _ := os.ReadFile("day16.txt")
   grid = loadState(string(data))
-  traverse(Point{-1, 0, ""}, Point{1, 0, ""})
 
-  fmt.Println(len(traversed))
+  bestRoute := 0
+  for x := range grid {
+    traversed = []Point{}
+    traverse(Point{x, 0, ""}, Point{0, 1, ""})
+    bestRoute = max(len(traversed), bestRoute)
+    traversed = []Point{}
+    traverse(Point{x, len(grid[0]), ""}, Point{0, -1, ""})
+    bestRoute = max(len(traversed), bestRoute)
+  }
+
+  for y := range grid[0] {
+    traversed = []Point{}
+    traverse(Point{0, y, ""}, Point{-1, 0, ""})
+    bestRoute = max(len(traversed), bestRoute)
+    traversed = []Point{}
+    traverse(Point{0, len(grid), ""}, Point{1, 0, ""})
+    bestRoute = max(len(traversed), bestRoute)
+  }
+
+  fmt.Println(bestRoute)
 }
