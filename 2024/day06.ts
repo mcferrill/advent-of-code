@@ -8,10 +8,6 @@ const directions = {
 	'<': [-1, 0],
 }
 
-function value(grid: string[][], x: number, y: number): string {
-	return grid[y][x];
-}
-
 function inBounds(grid: string[][], x: number, y: number): boolean {
 	if (x < 0 || x > grid[0].length - 1) return false
 	if (y < 0 || y > grid.length - 1) return false
@@ -26,7 +22,7 @@ fs.readFile('day06.txt', (_, data) => {
 	// Find starting position and direction
 	let x = -1
 	let y = -1
-	let direction: string | undefined = undefined
+	let direction: string | undefined
 	for (const i in grid) {
 		if (x > -1 && y > -1) break
 		for (const dir in directions) {
